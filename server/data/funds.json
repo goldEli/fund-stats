@@ -1,0 +1,23 @@
+{
+  "funds": [
+    {
+      "code": "001040",
+      "name": "新华策略精选股票A",
+      "type": "股票型-主动",
+      "netValue": 1,
+      "accumulatedNetValue": 1,
+      "establishDate": "2000-01-01",
+      "manager": "未知",
+      "scale": 0,
+      "lastUpdate": "2026-02-20T16:06:12.374Z",
+      "dailyGrowth": 0.61,
+      "weeklyGrowth": 27.61,
+      "monthlyGrowth": 18.31,
+      "yearlyGrowth": 105.05,
+      "rank": 3,
+      "totalInType": 1065,
+      "rating": "excellent"
+    }
+  ],
+  "lastSync": "2026-02-20T16:06:12.375Z"
+}

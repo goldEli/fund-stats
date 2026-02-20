@@ -99,8 +99,8 @@ async function fetchFundRanking(code: string): Promise<FundRanking> {
     const rowText = $(row).text();
     if (rowText.includes('同类排名')) {
       const tds = $(row).find('td').toArray();
-      if (tds.length >= 2) {
-        const monthlyTd = tds[1];
+      if (tds.length >= 3) {
+        const monthlyTd = tds[2];
         rankingText = $(monthlyTd).text();
       }
     }

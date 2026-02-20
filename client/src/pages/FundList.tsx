@@ -120,6 +120,7 @@ function FundList() {
     setSyncing(true);
     setError('');
     setSuccess('');
+    setAddProgress('开始同步...');
     try {
       const results = await syncAllFunds();
       await loadFunds();
@@ -129,6 +130,7 @@ function FundList() {
       setError('批量同步失败');
     } finally {
       setSyncing(false);
+      setAddProgress('');
     }
   };
 

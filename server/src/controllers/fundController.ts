@@ -106,13 +106,18 @@ export async function syncAllFunds(req: Request, res: Response): Promise<void> {
     const funds = fundService.getAllFunds();
     const results: { code: string; success: boolean; fund?: Fund; error?: string }[] = [];
     
-    for (const fund of funds) {
+    for (let i = 0; i < funds.length; i++) {
+      const fund = funds[i];
       try {
         const updatedFund = await fundApiService.fetchFundWithRetry(fund.code);
         fundService.addFund(updatedFund);
         results.push({ code: fund.code, success: true, fund: updatedFund });
       } catch (error) {
         results.push({ code: fund.code, success: false, error: 'Sync failed' });
+      }
+      
+      if (i < funds.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 1500));
       }
     }
     
