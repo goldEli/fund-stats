@@ -39,10 +39,13 @@ function FundList() {
     setError('');
     setSuccess('');
     
-    const codes = newFundCodes.split('。').map(c => c.trim()).filter(c => /^\d{6}$/.test(c));
+    const existingCodes = new Set(funds.map(f => f.code));
+    const codes = newFundCodes.split('。').map(c => c.trim()).filter(c => /^\d{6}$/.test(c) && !existingCodes.has(c));
+    
+    const skippedCodes = newFundCodes.split('。').map(c => c.trim()).filter(c => /^\d{6}$/.test(c) && existingCodes.has(c));
     
     if (codes.length === 0) {
-      setError('请输入有效的6位基金代码，多个用中文句号分隔');
+      setError('请输入有效的基金代码，或添加不在列表中的基金');
       return;
     }
 
@@ -80,7 +83,11 @@ function FundList() {
     }
     
     if (addedFunds.length > 0) {
-      setSuccess(`成功添加 ${addedFunds.length} 只基金`);
+      let msg = `成功添加 ${addedFunds.length} 只基金`;
+      if (skippedCodes.length > 0) {
+        msg += `（已跳过 ${skippedCodes.length} 只重复基金）`;
+      }
+      setSuccess(msg);
     }
     
     setNewFundCodes('');
