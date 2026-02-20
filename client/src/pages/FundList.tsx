@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { getAllFunds, addFund, deleteFund, syncFund, syncAllFunds } from '../services/api';
-import type { Fund } from '../types';
+import type { Fund, FundRating } from '../types';
+
+type SortField = 'code' | 'name' | 'type' | 'netValue' | 'monthlyGrowth' | 'yearlyGrowth' | 'rating' | 'rank';
+type SortDirection = 'asc' | 'desc';
 
 function FundList() {
   const [funds, setFunds] = useState<Fund[]>([]);
@@ -12,6 +15,8 @@ function FundList() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [syncing, setSyncing] = useState(false);
+  const [sortField, setSortField] = useState<SortField>('rank');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
   useEffect(() => {
     loadFunds();
@@ -90,10 +95,53 @@ function FundList() {
     }
   };
 
-  const filteredFunds = funds.filter(fund => 
-    fund.code.includes(searchTerm) || 
-    fund.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const getSortIndicator = (field: SortField) => {
+    if (sortField !== field) return '';
+    return sortDirection === 'asc' ? ' ↑' : ' ↓';
+  };
+
+  const ratingValue: Record<FundRating, number> = {
+    excellent: 1,
+    average: 2,
+    weak: 3,
+  };
+
+  const filteredAndSortedFunds = funds
+    .filter(fund => 
+      fund.code.includes(searchTerm) || 
+      fund.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      let aVal: any = a[sortField];
+      let bVal: any = b[sortField];
+      
+      if (sortField === 'rating') {
+        aVal = ratingValue[a.rating];
+        bVal = ratingValue[b.rating];
+      }
+      
+      if (sortField === 'rank') {
+        aVal = a.rank / (a.totalInType || 1);
+        bVal = b.rank / (b.totalInType || 1);
+      }
+      
+      if (typeof aVal === 'string') {
+        return sortDirection === 'asc' 
+          ? aVal.localeCompare(bVal) 
+          : bVal.localeCompare(aVal);
+      }
+      
+      return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+    });
 
   const formatGrowth = (value: number) => {
     const formatted = value >= 0 ? `+${value.toFixed(2)}%` : `${value.toFixed(2)}%`;
@@ -143,7 +191,7 @@ function FundList() {
           />
         </div>
 
-        {filteredFunds.length === 0 ? (
+        {filteredAndSortedFunds.length === 0 ? (
           <div className="empty">
             {funds.length === 0 ? '暂无基金，请添加基金' : '未找到匹配的基金'}
           </div>
@@ -151,19 +199,19 @@ function FundList() {
           <table>
             <thead>
               <tr>
-                <th>代码</th>
-                <th>名称</th>
-                <th>类型</th>
-                <th>净值</th>
-                <th>月增长</th>
-                <th>年增长</th>
-                <th>评级</th>
-                <th>近一个月<br/>同类型排名</th>
+                <th onClick={() => handleSort('code')} style={{ cursor: 'pointer' }}>代码{getSortIndicator('code')}</th>
+                <th onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>名称{getSortIndicator('name')}</th>
+                <th onClick={() => handleSort('type')} style={{ cursor: 'pointer' }}>类型{getSortIndicator('type')}</th>
+                <th onClick={() => handleSort('netValue')} style={{ cursor: 'pointer' }}>净值{getSortIndicator('netValue')}</th>
+                <th onClick={() => handleSort('monthlyGrowth')} style={{ cursor: 'pointer' }}>月增长{getSortIndicator('monthlyGrowth')}</th>
+                <th onClick={() => handleSort('yearlyGrowth')} style={{ cursor: 'pointer' }}>年增长{getSortIndicator('yearlyGrowth')}</th>
+                <th onClick={() => handleSort('rating')} style={{ cursor: 'pointer' }}>评级{getSortIndicator('rating')}</th>
+                <th onClick={() => handleSort('rank')} style={{ cursor: 'pointer' }}>近一个月<br/>同类型排名{getSortIndicator('rank')}</th>
                 <th>操作</th>
               </tr>
             </thead>
             <tbody>
-              {filteredFunds.map(fund => (
+              {filteredAndSortedFunds.map(fund => (
                 <tr key={fund.code}>
                   <td>{fund.code}</td>
                   <td>{fund.name}</td>
