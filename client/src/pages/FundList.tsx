@@ -10,8 +10,9 @@ function FundList() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newFundCode, setNewFundCode] = useState('');
+  const [newFundCodes, setNewFundCodes] = useState('');
   const [adding, setAdding] = useState(false);
+  const [addProgress, setAddProgress] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [syncing, setSyncing] = useState(false);
@@ -33,28 +34,57 @@ function FundList() {
     }
   };
 
-  const handleAddFund = async (e: React.FormEvent) => {
+  const handleAddFunds = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess('');
     
-    if (!/^\d{6}$/.test(newFundCode)) {
-      setError('请输入6位基金代码');
+    const codes = newFundCodes.split('。').map(c => c.trim()).filter(c => /^\d{6}$/.test(c));
+    
+    if (codes.length === 0) {
+      setError('请输入有效的6位基金代码，多个用中文句号分隔');
       return;
     }
 
     setAdding(true);
-    try {
-      const fund = await addFund(newFundCode);
-      setFunds([...funds, fund]);
-      setSuccess(`成功添加基金: ${fund.name}`);
-      setNewFundCode('');
-      setShowAddModal(false);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : '添加失败');
-    } finally {
-      setAdding(false);
+    setAddProgress('开始添加...');
+    
+    const addedFunds: Fund[] = [];
+    const failedCodes: string[] = [];
+    
+    for (let i = 0; i < codes.length; i++) {
+      const code = codes[i];
+      setAddProgress(`添加中 (${i + 1}/${codes.length}): ${code}`);
+      
+      try {
+        const fund = await addFund(code);
+        addedFunds.push(fund);
+      } catch (error) {
+        failedCodes.push(code);
+      }
+      
+      if (i < codes.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      }
     }
+    
+    if (addedFunds.length > 0) {
+      setFunds([...funds, ...addedFunds]);
+    }
+    
+    setAdding(false);
+    setAddProgress('');
+    
+    if (failedCodes.length > 0) {
+      setError(`添加失败: ${failedCodes.join(', ')}`);
+    }
+    
+    if (addedFunds.length > 0) {
+      setSuccess(`成功添加 ${addedFunds.length} 只基金`);
+    }
+    
+    setNewFundCodes('');
+    setShowAddModal(false);
   };
 
   const handleDeleteFund = async (code: string) => {
@@ -255,22 +285,28 @@ function FundList() {
       </div>
 
       {showAddModal && (
-        <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
+        <div className="modal-overlay" onClick={() => !adding && setShowAddModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <h2>添加基金</h2>
-            <form onSubmit={handleAddFund}>
+            <form onSubmit={handleAddFunds}>
               <div className="form-group">
                 <label>基金代码</label>
-                <input
-                  type="text"
-                  placeholder="请输入6位基金代码"
-                  value={newFundCode}
-                  onChange={(e) => setNewFundCode(e.target.value)}
-                  maxLength={6}
+                <textarea
+                  placeholder="请输入基金代码，多个用中文句号分隔&#10;例如：161039，161725，161130"
+                  value={newFundCodes}
+                  onChange={(e) => setNewFundCodes(e.target.value)}
+                  rows={4}
+                  disabled={adding}
+                  style={{ width: '100%', padding: '10px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px', fontFamily: 'inherit', resize: 'vertical' }}
                 />
               </div>
+              {addProgress && (
+                <div style={{ padding: '8px 12px', background: '#f0f9ff', borderRadius: '6px', marginBottom: '16px', fontSize: '14px', color: '#0369a1' }}>
+                  {addProgress}
+                </div>
+              )}
               <div className="modal-actions">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowAddModal(false)}>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowAddModal(false)} disabled={adding}>
                   取消
                 </button>
                 <button type="submit" className="btn btn-primary" disabled={adding}>
