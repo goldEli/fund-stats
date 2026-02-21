@@ -5,7 +5,7 @@ export function calculateRating(rank: number, total: number): FundRating {
   if (total === 0 || rank === 0) return 'average';
   const percentage = rank / total;
   if (percentage <= 0.2) return 'excellent';
-  if (percentage <= 0.5) return 'average';
+  if (percentage <= 0.6) return 'average';
   return 'weak';
 }
 

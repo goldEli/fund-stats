@@ -5,6 +5,14 @@ import type { Fund, FundRating } from '../types';
 type SortField = 'code' | 'name' | 'type' | 'netValue' | 'monthlyGrowth' | 'yearlyGrowth' | 'rating' | 'rank';
 type SortDirection = 'asc' | 'desc';
 
+function calculateRating(rank: number, total: number): FundRating {
+  if (total === 0 || rank === 0) return 'average';
+  const percentage = rank / total;
+  if (percentage <= 0.2) return 'excellent';
+  if (percentage <= 0.6) return 'average';
+  return 'weak';
+}
+
 function FundList() {
   const [funds, setFunds] = useState<Fund[]>([]);
   const [loading, setLoading] = useState(true);
@@ -292,8 +300,8 @@ function FundList() {
                     </span>
                   </td>
                   <td>
-                    <span className={`rating ${fund.rating}`} style={{ whiteSpace: 'nowrap' }}>
-                      {formatRating(fund.rating)}
+                    <span className={`rating ${calculateRating(fund.rank, fund.totalInType)}`} style={{ whiteSpace: 'nowrap' }}>
+                      {formatRating(calculateRating(fund.rank, fund.totalInType))}
                     </span>
                   </td>
                   <td>{fund.rank > 0 ? `${fund.rank}/${fund.totalInType}` : '-'}</td>
