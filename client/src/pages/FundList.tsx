@@ -20,7 +20,7 @@ function FundList() {
   const [sortField, setSortField] = useState<SortField>('rank');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
-  const typeOptions = ['全部', ...new Set(funds.map(f => f.type))].sort();
+  const typeOptions = ['全部', ...new Set(funds.map(f => f.type))].sort((a, b) => a === '全部' ? -1 : b === '全部' ? 1 : a.localeCompare(b));
 
   useEffect(() => {
     loadFunds();
