@@ -17,7 +17,25 @@
       "rank": 3,
       "totalInType": 1065,
       "rating": "excellent"
+    },
+    {
+      "code": "161130",
+      "name": "易方达纳斯达克100ETF联接(QDII-LOF)A(人民币)",
+      "type": "QDII-美股",
+      "netValue": 1,
+      "accumulatedNetValue": 1,
+      "establishDate": "2000-01-01",
+      "manager": "未知",
+      "scale": 0,
+      "lastUpdate": "2026-02-21T01:12:17.821Z",
+      "dailyGrowth": -0.16,
+      "weeklyGrowth": -0.12,
+      "monthlyGrowth": -4.88,
+      "yearlyGrowth": 8.47,
+      "rank": 221,
+      "totalInType": 357,
+      "rating": "weak"
     }
   ],
-  "lastSync": "2026-02-21T00:00:01.152Z"
+  "lastSync": "2026-02-21T01:12:17.822Z"
 }
