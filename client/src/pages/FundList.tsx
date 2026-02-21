@@ -9,6 +9,7 @@ function FundList() {
   const [funds, setFunds] = useState<Fund[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [typeFilter, setTypeFilter] = useState<string>('全部');
   const [showAddModal, setShowAddModal] = useState(false);
   const [newFundCodes, setNewFundCodes] = useState('');
   const [adding, setAdding] = useState(false);
@@ -18,6 +19,8 @@ function FundList() {
   const [syncing, setSyncing] = useState(false);
   const [sortField, setSortField] = useState<SortField>('rank');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+
+  const typeOptions = ['全部', ...new Set(funds.map(f => f.type))].sort();
 
   useEffect(() => {
     loadFunds();
@@ -156,8 +159,9 @@ function FundList() {
 
   const filteredAndSortedFunds = funds
     .filter(fund => 
-      fund.code.includes(searchTerm) || 
-      fund.name.toLowerCase().includes(searchTerm.toLowerCase())
+      (typeFilter === '全部' || fund.type === typeFilter) &&
+      (fund.code.includes(searchTerm) || 
+      fund.name.toLowerCase().includes(searchTerm.toLowerCase()))
     )
     .sort((a, b) => {
       let aVal: any = a[sortField];
@@ -227,7 +231,17 @@ function FundList() {
             placeholder="搜索基金代码或名称..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: 1 }}
           />
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            style={{ marginLeft: '12px', padding: '8px 12px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px' }}
+          >
+            {typeOptions.map(type => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
         </div>
 
         {filteredAndSortedFunds.length === 0 ? (
