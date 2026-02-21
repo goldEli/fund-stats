@@ -225,23 +225,34 @@ function FundList() {
           </div>
         </div>
 
-        <div className="search-bar">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
           <input
             type="text"
             placeholder="搜索基金代码或名称..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ flex: 1 }}
+            style={{ padding: '10px 12px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px', width: '100%', boxSizing: 'border-box' }}
           />
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            style={{ marginLeft: '12px', padding: '8px 12px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px' }}
-          >
+          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
             {typeOptions.map(type => (
-              <option key={type} value={type}>{type}</option>
+              <button
+                key={type}
+                onClick={() => setTypeFilter(type)}
+                style={{
+                  padding: '6px 12px',
+                  border: typeFilter === type ? '1px solid #3b82f6' : '1px solid #e2e8f0',
+                  borderRadius: '6px',
+                  background: typeFilter === type ? '#3b82f6' : '#fff',
+                  color: typeFilter === type ? '#fff' : '#333',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {type}
+              </button>
             ))}
-          </select>
+          </div>
         </div>
 
         {filteredAndSortedFunds.length === 0 ? (

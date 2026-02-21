@@ -9,7 +9,7 @@
       "establishDate": "2000-01-01",
       "manager": "未知",
       "scale": 0,
-      "lastUpdate": "2026-02-21T00:00:01.151Z",
+      "lastUpdate": "2026-02-21T01:20:12.806Z",
       "dailyGrowth": 0.61,
       "weeklyGrowth": 27.61,
       "monthlyGrowth": 18.31,
@@ -27,7 +27,7 @@
       "establishDate": "2000-01-01",
       "manager": "未知",
       "scale": 0,
-      "lastUpdate": "2026-02-21T01:12:17.821Z",
+      "lastUpdate": "2026-02-21T01:20:14.423Z",
       "dailyGrowth": -0.16,
       "weeklyGrowth": -0.12,
       "monthlyGrowth": -4.88,
@@ -37,5 +37,5 @@
       "rating": "weak"
     }
   ],
-  "lastSync": "2026-02-21T01:12:17.822Z"
+  "lastSync": "2026-02-21T01:20:14.425Z"
 }
