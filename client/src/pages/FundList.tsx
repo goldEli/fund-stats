@@ -281,7 +281,7 @@ function FundList() {
                     </span>
                   </td>
                   <td>
-                    <span className={`rating ${fund.rating}`}>
+                    <span className={`rating ${fund.rating}`} style={{ whiteSpace: 'nowrap' }}>
                       {formatRating(fund.rating)}
                     </span>
                   </td>
