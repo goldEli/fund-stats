@@ -1,7 +1,7 @@
 {
   "name": "fund-stats-server",
   "version": "1.0.0",
-  "description": "基金统计分析网站 - 后端服务",
+  "description": "fund stats - 后端服务",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",

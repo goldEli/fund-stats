@@ -10,7 +10,7 @@ function App() {
     <>
       <nav>
         <div className="container">
-          <h1>📊 基金统计分析</h1>
+          <h1>📊 fund stats</h1>
           <ul>
             <li>
               <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
