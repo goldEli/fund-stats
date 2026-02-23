@@ -40,7 +40,7 @@ function Analysis() {
         },
         series: [
           {
-            name: '增长率',
+            name: 'Growth',
             type: 'bar',
             data: topFunds.map(f => {
               const growth = f[`${period}Growth` as keyof Fund] as number;
@@ -89,27 +89,27 @@ function Analysis() {
   };
 
   if (loading) {
-    return <div className="loading">加载中...</div>;
+    return <div className="loading">Loading...</div>;
   }
 
   return (
     <div>
       <div className="card">
-        <h2>基金排名分析</h2>
+        <h2>Fund Ranking Analysis</h2>
         <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>时间周期</label>
+            <label>Period</label>
             <select value={period} onChange={(e) => setPeriod(e.target.value)}>
-              <option value="daily">日</option>
-              <option value="weekly">周</option>
-              <option value="monthly">月</option>
-              <option value="yearly">年</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
             </select>
           </div>
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label>基金类型</label>
+            <label>Fund Type</label>
             <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)}>
-              <option value="">全部类型</option>
+              <option value="">All Types</option>
               {typeDist.map(t => (
                 <option key={t.type} value={t.type}>{t.type}</option>
               ))}
@@ -121,21 +121,21 @@ function Analysis() {
       </div>
 
       <div className="card">
-        <h2>详细排名</h2>
+        <h2>Detailed Rankings</h2>
         {funds.length === 0 ? (
-          <div className="empty">暂无数据</div>
+          <div className="empty">No data</div>
         ) : (
           <table>
             <thead>
               <tr>
-                <th>排名</th>
-                <th>代码</th>
-                <th>名称</th>
-                <th>类型</th>
-                <th>日增长</th>
-                <th>周增长</th>
-                <th>月增长</th>
-                <th>年增长</th>
+                <th>Rank</th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Daily</th>
+                <th>Weekly</th>
+                <th>Monthly</th>
+                <th>Yearly</th>
               </tr>
             </thead>
             <tbody>

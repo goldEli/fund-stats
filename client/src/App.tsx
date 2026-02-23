@@ -14,17 +14,17 @@ function App() {
           <ul>
             <li>
               <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
-                仪表盘
+                Dashboard
               </Link>
             </li>
             <li>
               <Link to="/funds" className={location.pathname === '/funds' ? 'active' : ''}>
-                基金列表
+                Funds
               </Link>
             </li>
             <li>
               <Link to="/analysis" className={location.pathname === '/analysis' ? 'active' : ''}>
-                数据分析
+                Analysis
               </Link>
             </li>
           </ul>

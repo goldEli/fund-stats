@@ -21,7 +21,7 @@ function Dashboard() {
         legend: { top: '5%', left: 'center' },
         series: [
           {
-            name: '基金类型',
+            name: 'Fund Type',
             type: 'pie',
             radius: ['40%', '70%'],
             avoidLabelOverlap: false,
@@ -67,7 +67,7 @@ function Dashboard() {
   };
 
   if (loading) {
-    return <div className="loading">加载中...</div>;
+    return <div className="loading">Loading...</div>;
   }
 
   const totalScale = funds.reduce((sum, f) => sum + f.scale, 0);
@@ -79,15 +79,15 @@ function Dashboard() {
     <div>
       <div className="stats-grid">
         <div className="stat-card">
-          <h3>基金总数</h3>
+          <h3>Total Funds</h3>
           <div className="value">{funds.length}</div>
         </div>
         <div className="stat-card">
-          <h3>基金总规模</h3>
-          <div className="value">{totalScale.toFixed(2)}亿</div>
+          <h3>Total Scale</h3>
+          <div className="value">{totalScale.toFixed(2)}B</div>
         </div>
         <div className="stat-card">
-          <h3>平均月增长</h3>
+          <h3>Avg Monthly Growth</h3>
           <div className={`value ${parseFloat(avgGrowth) >= 0 ? 'positive' : 'negative'}`}>
             {parseFloat(avgGrowth) >= 0 ? '+' : ''}{avgGrowth}%
           </div>
@@ -95,7 +95,7 @@ function Dashboard() {
       </div>
 
       <div className="card">
-        <h2>基金类型分布</h2>
+        <h2>Fund Type Distribution</h2>
         <div ref={typeChartRef} style={{ height: '400px' }} />
       </div>
     </div>

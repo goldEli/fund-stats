@@ -164,8 +164,8 @@ export async function fetchFundFromApi(code: string): Promise<Fund> {
     return isNaN(num) ? 0 : num;
   };
   
-  const name = extractValue('fS_name') || '未知基金';
-  const baseType = extractValue('fS_type') || '混合型';
+  const name = extractValue('fS_name') || 'Unknown Fund';
+  const baseType = extractValue('fS_type') || 'Mixed';
   const detailedType = inferDetailedType(name, baseType);
   
   const yearlyGrowth = extractGrowthRate('syl_1n');
@@ -187,7 +187,7 @@ export async function fetchFundFromApi(code: string): Promise<Fund> {
     netValue: 1.0,
     accumulatedNetValue: 1.0,
     establishDate: '2000-01-01',
-    manager: '未知',
+    manager: 'Unknown',
     scale: 0,
     lastUpdate: new Date().toISOString(),
     dailyGrowth: Number(dailyGrowth.toFixed(2)),
@@ -196,7 +196,6 @@ export async function fetchFundFromApi(code: string): Promise<Fund> {
     yearlyGrowth: Number(yearlyGrowth.toFixed(2)),
     rank: ranking.rank,
     totalInType: ranking.total,
-    rating: 'average',
   };
   
   return fund;

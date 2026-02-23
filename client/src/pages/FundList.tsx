@@ -9,7 +9,7 @@ function FundList() {
   const [funds, setFunds] = useState<Fund[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState<string>('全部');
+  const [typeFilter, setTypeFilter] = useState<string>('All');
   const [showAddModal, setShowAddModal] = useState(false);
   const [newFundCodes, setNewFundCodes] = useState('');
   const [adding, setAdding] = useState(false);
@@ -20,7 +20,7 @@ function FundList() {
   const [sortField, setSortField] = useState<SortField>('rank');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
-  const typeOptions = ['全部', ...new Set(funds.map(f => f.type))].sort((a, b) => a === '全部' ? -1 : b === '全部' ? 1 : a.localeCompare(b));
+  const typeOptions = ['All', ...new Set(funds.map(f => f.type))].sort((a, b) => a === 'All' ? -1 : b === 'All' ? 1 : a.localeCompare(b));
 
   useEffect(() => {
     loadFunds();
@@ -43,24 +43,24 @@ function FundList() {
     setSuccess('');
     
     const existingCodes = new Set(funds.map(f => f.code));
-    const codes = newFundCodes.split('。').map(c => c.trim()).filter(c => /^\d{6}$/.test(c) && !existingCodes.has(c));
+    const codes = newFundCodes.split('，').map(c => c.trim()).filter(c => /^\d{6}$/.test(c) && !existingCodes.has(c));
     
-    const skippedCodes = newFundCodes.split('。').map(c => c.trim()).filter(c => /^\d{6}$/.test(c) && existingCodes.has(c));
+    const skippedCodes = newFundCodes.split('，').map(c => c.trim()).filter(c => /^\d{6}$/.test(c) && existingCodes.has(c));
     
     if (codes.length === 0) {
-      setError('请输入有效的基金代码，或添加不在列表中的基金');
+      setError('Please enter valid fund codes, or add funds not in the list');
       return;
     }
 
     setAdding(true);
-    setAddProgress('开始添加...');
+    setAddProgress('Starting to add...');
     
     const addedFunds: Fund[] = [];
     const failedCodes: string[] = [];
     
     for (let i = 0; i < codes.length; i++) {
       const code = codes[i];
-      setAddProgress(`添加中 (${i + 1}/${codes.length}): ${code}`);
+      setAddProgress(`Adding (${i + 1}/${codes.length}): ${code}`);
       
       try {
         const fund = await addFund(code);
@@ -82,13 +82,13 @@ function FundList() {
     setAddProgress('');
     
     if (failedCodes.length > 0) {
-      setError(`添加失败: ${failedCodes.join(', ')}`);
+      setError(`Failed to add: ${failedCodes.join(', ')}`);
     }
     
     if (addedFunds.length > 0) {
-      let msg = `成功添加 ${addedFunds.length} 只基金`;
+      let msg = `Successfully added ${addedFunds.length} fund(s)`;
       if (skippedCodes.length > 0) {
-        msg += `（已跳过 ${skippedCodes.length} 只重复基金）`;
+        msg += ` (skipped ${skippedCodes.length} duplicate(s))`;
       }
       setSuccess(msg);
     }
@@ -98,14 +98,14 @@ function FundList() {
   };
 
   const handleDeleteFund = async (code: string) => {
-    if (!confirm('确定要删除该基金吗？')) return;
+    if (!confirm('Are you sure you want to delete this fund?')) return;
     
     try {
       await deleteFund(code);
       setFunds(funds.filter(f => f.code !== code));
-      setSuccess('删除成功');
+      setSuccess('Deleted successfully');
     } catch (error) {
-      setError(error instanceof Error ? error.message : '删除失败');
+      setError(error instanceof Error ? error.message : 'Delete failed');
     }
   };
 
@@ -113,9 +113,9 @@ function FundList() {
     try {
       const updatedFund = await syncFund(code);
       setFunds(funds.map(f => f.code === code ? updatedFund : f));
-      setSuccess('同步成功');
+      setSuccess('Synced successfully');
     } catch (error) {
-      setError(error instanceof Error ? error.message : '同步失败');
+      setError(error instanceof Error ? error.message : 'Sync failed');
     }
   };
 
@@ -123,14 +123,14 @@ function FundList() {
     setSyncing(true);
     setError('');
     setSuccess('');
-    setAddProgress('开始同步...');
+    setAddProgress('Starting sync...');
     try {
       const results = await syncAllFunds();
       await loadFunds();
       const successCount = results.filter(r => r.success).length;
-      setSuccess(`同步完成: ${successCount}/${results.length} 成功`);
+      setSuccess(`Sync completed: ${successCount}/${results.length} successful`);
     } catch (error) {
-      setError('批量同步失败');
+      setError('Batch sync failed');
     } finally {
       setSyncing(false);
       setAddProgress('');
@@ -153,7 +153,7 @@ function FundList() {
 
   const filteredAndSortedFunds = funds
     .filter(fund => 
-      (typeFilter === '全部' || fund.type === typeFilter) &&
+      (typeFilter === 'All' || fund.type === typeFilter) &&
       (fund.code.includes(searchTerm) || 
       fund.name.toLowerCase().includes(searchTerm.toLowerCase()))
     )
@@ -181,7 +181,7 @@ function FundList() {
   };
 
   if (loading) {
-    return <div className="loading">加载中...</div>;
+    return <div className="loading">Loading...</div>;
   }
 
   return (
@@ -194,13 +194,13 @@ function FundList() {
 
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2>基金列表</h2>
+          <h2>Funds</h2>
           <div style={{ display: 'flex', gap: '12px' }}>
             <button className="btn btn-secondary" onClick={handleSyncAll} disabled={syncing}>
-              {syncing ? '同步中...' : '批量同步'}
+              {syncing ? 'Syncing...' : 'Sync All'}
             </button>
             <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
-              + 添加基金
+              + Add Fund
             </button>
           </div>
         </div>
@@ -208,7 +208,7 @@ function FundList() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
           <input
             type="text"
-            placeholder="搜索基金代码或名称..."
+            placeholder="Search by code or name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ padding: '10px 12px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '14px', width: '100%', boxSizing: 'border-box' }}
@@ -237,20 +237,20 @@ function FundList() {
 
         {filteredAndSortedFunds.length === 0 ? (
           <div className="empty">
-            {funds.length === 0 ? '暂无基金，请添加基金' : '未找到匹配的基金'}
+            {funds.length === 0 ? 'No funds, please add funds' : 'No matching funds found'}
           </div>
         ) : (
           <table>
             <thead>
               <tr>
-                <th onClick={() => handleSort('code')} style={{ cursor: 'pointer' }}>代码{getSortIndicator('code')}</th>
-                <th onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>名称{getSortIndicator('name')}</th>
-                <th onClick={() => handleSort('type')} style={{ cursor: 'pointer' }}>类型{getSortIndicator('type')}</th>
-                <th onClick={() => handleSort('netValue')} style={{ cursor: 'pointer' }}>净值{getSortIndicator('netValue')}</th>
-                <th onClick={() => handleSort('monthlyGrowth')} style={{ cursor: 'pointer' }}>月增长{getSortIndicator('monthlyGrowth')}</th>
-                <th onClick={() => handleSort('yearlyGrowth')} style={{ cursor: 'pointer' }}>年增长{getSortIndicator('yearlyGrowth')}</th>
-                <th onClick={() => handleSort('rank')} style={{ cursor: 'pointer' }}>近一个月<br/>同类型排名{getSortIndicator('rank')}</th>
-                <th>操作</th>
+                <th onClick={() => handleSort('code')} style={{ cursor: 'pointer' }}>Code{getSortIndicator('code')}</th>
+                <th onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>Name{getSortIndicator('name')}</th>
+                <th onClick={() => handleSort('type')} style={{ cursor: 'pointer' }}>Type{getSortIndicator('type')}</th>
+                <th onClick={() => handleSort('netValue')} style={{ cursor: 'pointer' }}>NAV{getSortIndicator('netValue')}</th>
+                <th onClick={() => handleSort('monthlyGrowth')} style={{ cursor: 'pointer' }}>Monthly{getSortIndicator('monthlyGrowth')}</th>
+                <th onClick={() => handleSort('yearlyGrowth')} style={{ cursor: 'pointer' }}>Yearly{getSortIndicator('yearlyGrowth')}</th>
+                <th onClick={() => handleSort('rank')} style={{ cursor: 'pointer' }}>Rank<br/>(1 Month){getSortIndicator('rank')}</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -276,13 +276,13 @@ function FundList() {
                       className="btn btn-secondary btn-sm"
                       onClick={() => handleSyncFund(fund.code)}
                     >
-                      同步
+                      Sync
                     </button>
                     <button
                       className="btn btn-danger btn-sm"
                       onClick={() => handleDeleteFund(fund.code)}
                     >
-                      删除
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -295,12 +295,12 @@ function FundList() {
       {showAddModal && (
         <div className="modal-overlay" onClick={() => !adding && setShowAddModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            <h2>添加基金</h2>
+            <h2>Add Fund</h2>
             <form onSubmit={handleAddFunds}>
               <div className="form-group">
-                <label>基金代码</label>
+                <label>Fund Code</label>
                 <textarea
-                  placeholder="请输入基金代码，多个用中文句号分隔&#10;例如：161039，161725，161130"
+                  placeholder="Enter fund codes, separated by Chinese comma&#10;Example: 161039，161725，161130"
                   value={newFundCodes}
                   onChange={(e) => setNewFundCodes(e.target.value)}
                   rows={4}
@@ -315,10 +315,10 @@ function FundList() {
               )}
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowAddModal(false)} disabled={adding}>
-                  取消
+                  Cancel
                 </button>
                 <button type="submit" className="btn btn-primary" disabled={adding}>
-                  {adding ? '添加中...' : '添加'}
+                  {adding ? 'Adding...' : 'Add'}
                 </button>
               </div>
             </form>
