@@ -4,6 +4,7 @@ import * as fundController from '../controllers/fundController.js';
 const router = Router();
 
 router.get('/funds', fundController.getAllFunds);
+router.get('/funds/sync-progress', fundController.getSyncProgress);
 router.get('/funds/:code', fundController.getFundByCode);
 router.post('/funds', fundController.addFund);
 router.put('/funds/:code', fundController.updateFund);

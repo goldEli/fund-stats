@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getAllFunds, addFund, deleteFund, syncFund, syncAllFunds } from '../services/api';
+import { getAllFunds, addFund, deleteFund, syncFund, syncAllFunds, getSyncProgress } from '../services/api';
 import type { Fund } from '../types';
 
 type SortField = 'code' | 'name' | 'type' | 'netValue' | 'monthlyGrowth' | 'yearlyGrowth' | 'rating' | 'rank';
@@ -17,6 +17,7 @@ function FundList() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [syncing, setSyncing] = useState(false);
+  const [syncProgress, setSyncProgress] = useState<{ total: number; current: number; isRunning: boolean }>({ total: 0, current: 0, isRunning: false });
   const [sortField, setSortField] = useState<SortField>('rank');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
@@ -25,6 +26,31 @@ function FundList() {
   useEffect(() => {
     loadFunds();
   }, []);
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+    if (syncing) {
+      interval = setInterval(async () => {
+        try {
+          const progress = await getSyncProgress();
+          setSyncProgress({
+            total: progress.total,
+            current: progress.current,
+            isRunning: progress.isRunning
+          });
+          if (!progress.isRunning) {
+            setSyncing(false);
+            loadFunds();
+          }
+        } catch (error) {
+          console.error('Failed to get sync progress:', error);
+        }
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [syncing]);
 
   const loadFunds = async () => {
     try {
@@ -125,13 +151,9 @@ function FundList() {
     setSuccess('');
     setAddProgress('Starting sync...');
     try {
-      const results = await syncAllFunds();
-      await loadFunds();
-      const successCount = results.filter(r => r.success).length;
-      setSuccess(`Sync completed: ${successCount}/${results.length} successful`);
+      await syncAllFunds();
     } catch (error) {
       setError('Batch sync failed');
-    } finally {
       setSyncing(false);
       setAddProgress('');
     }
@@ -214,7 +236,28 @@ function FundList() {
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <h2>Funds</h2>
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            {syncing && syncProgress.total > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '8px' }}>
+                <div style={{ 
+                  width: '120px', 
+                  height: '8px', 
+                  background: '#e2e8f0', 
+                  borderRadius: '4px',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    width: `${(syncProgress.current / syncProgress.total) * 100}%`,
+                    height: '100%',
+                    background: '#3b82f6',
+                    transition: 'width 0.3s ease'
+                  }} />
+                </div>
+                <span style={{ fontSize: '12px', color: '#64748b', whiteSpace: 'nowrap' }}>
+                  {syncProgress.current}/{syncProgress.total}
+                </span>
+              </div>
+            )}
             <button className="btn btn-secondary" onClick={handleSyncAll} disabled={syncing}>
               {syncing ? 'Syncing...' : 'Sync All'}
             </button>

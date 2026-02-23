@@ -40,10 +40,15 @@ export async function syncFund(code: string): Promise<Fund> {
   return response.data.data!;
 }
 
-export async function syncAllFunds(): Promise<{ code: string; success: boolean }[]> {
-  const response = await api.post<ApiResponse<{ code: string; success: boolean }[]>>('/funds/sync-all');
+export async function syncAllFunds(): Promise<void> {
+  const response = await api.post<ApiResponse<{ message: string }>>('/funds/sync-all');
   if (!response.data.success) throw new Error(response.data.error || 'Failed to sync all funds');
-  return response.data.data || [];
+}
+
+export async function getSyncProgress(): Promise<{ total: number; current: number; isRunning: boolean; results: { code: string; success: boolean }[] }> {
+  const response = await api.get<ApiResponse<{ total: number; current: number; isRunning: boolean; results: { code: string; success: boolean }[] }>>('/funds/sync-progress');
+  if (!response.data.success) throw new Error(response.data.error || 'Failed to get sync progress');
+  return response.data.data!;
 }
 
 export async function getRankings(params?: { type?: string; period?: string }): Promise<Fund[]> {

@@ -101,31 +101,71 @@ export async function syncFund(req: Request, res: Response): Promise<void> {
   }
 }
 
-export async function syncAllFunds(req: Request, res: Response): Promise<void> {
-  try {
-    const funds = fundService.getAllFunds();
-    const results: { code: string; success: boolean; fund?: Fund; error?: string }[] = [];
-    
-    for (let i = 0; i < funds.length; i++) {
-      const fund = funds[i];
-      try {
-        const updatedFund = await fundApiService.fetchFundWithRetry(fund.code);
-        fundService.addFund(updatedFund);
-        results.push({ code: fund.code, success: true, fund: updatedFund });
-      } catch (error) {
-        results.push({ code: fund.code, success: false, error: 'Sync failed' });
+let syncProgress = {
+  total: 0,
+  current: 0,
+  isRunning: false,
+  results: [] as { code: string; success: boolean }[]
+};
+
+function runSyncInBackground() {
+  (async () => {
+    try {
+      const funds = fundService.getAllFunds();
+      
+      syncProgress = {
+        total: funds.length,
+        current: 0,
+        isRunning: true,
+        results: []
+      };
+      
+      for (let i = 0; i < funds.length; i++) {
+        const fund = funds[i];
+        try {
+          const updatedFund = await fundApiService.fetchFundWithRetry(fund.code);
+          fundService.addFund(updatedFund);
+          syncProgress.results.push({ code: fund.code, success: true });
+        } catch (error) {
+          syncProgress.results.push({ code: fund.code, success: false });
+        }
+        
+        syncProgress.current = i + 1;
+        
+        if (i < funds.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        }
       }
       
-      if (i < funds.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-      }
+      statsService.saveRankingsToFunds();
+      syncProgress.isRunning = false;
+    } catch (error) {
+      console.error('Background sync failed:', error);
+      syncProgress.isRunning = false;
     }
-    
-    statsService.saveRankingsToFunds();
-    res.json({ success: true, data: results });
-  } catch (error) {
-    res.status(500).json({ success: false, error: 'Failed to sync all funds' });
+  })();
+}
+
+export function syncAllFunds(req: Request, res: Response): void {
+  if (syncProgress.isRunning) {
+    res.json({ success: false, error: 'Sync already in progress' });
+    return;
   }
+  
+  runSyncInBackground();
+  res.json({ success: true, data: { message: 'Sync started' } });
+}
+
+export function getSyncProgress(req: Request, res: Response): void {
+  res.json({ 
+    success: true, 
+    data: {
+      total: syncProgress.total,
+      current: syncProgress.current,
+      isRunning: syncProgress.isRunning,
+      results: syncProgress.results
+    }
+  });
 }
 
 export function getRanking(req: Request, res: Response): void {
