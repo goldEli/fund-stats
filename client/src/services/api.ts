@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Fund, ApiResponse, TypeDistribution, RatingDistribution } from '../types';
+import type { Fund, ApiResponse, TypeDistribution } from '../types';
 
 const api = axios.create({
   baseURL: '/api',
@@ -53,10 +53,5 @@ export async function getRankings(params?: { type?: string; period?: string }): 
 
 export async function getTypeDistribution(): Promise<TypeDistribution[]> {
   const response = await api.get<ApiResponse<TypeDistribution[]>>('/stats/type-distribution');
-  return response.data.data || [];
-}
-
-export async function getRatingDistribution(): Promise<RatingDistribution[]> {
-  const response = await api.get<ApiResponse<RatingDistribution[]>>('/stats/rating-distribution');
   return response.data.data || [];
 }

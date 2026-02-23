@@ -343,24 +343,6 @@
       "rating": "excellent"
     },
     {
-      "code": "012094",
-      "name": "鹏华创新升级混合C",
-      "type": "混合型-偏股",
-      "netValue": 1,
-      "accumulatedNetValue": 1,
-      "establishDate": "2000-01-01",
-      "manager": "未知",
-      "scale": 0,
-      "lastUpdate": "2026-02-21T02:16:05.324Z",
-      "dailyGrowth": -0.1,
-      "weeklyGrowth": 7.32,
-      "monthlyGrowth": -2.86,
-      "yearlyGrowth": 89.96,
-      "rank": 4363,
-      "totalInType": 5114,
-      "rating": "weak"
-    },
-    {
       "code": "003766",
       "name": "广发创业板ETF发起式联接C",
       "type": "指数型-创业板",
@@ -1132,24 +1114,6 @@
       "yearlyGrowth": 23.62,
       "rank": 3124,
       "totalInType": 4829,
-      "rating": "weak"
-    },
-    {
-      "code": "008572",
-      "name": "金信民达纯债C",
-      "type": "混合型-偏股",
-      "netValue": 1,
-      "accumulatedNetValue": 1,
-      "establishDate": "2000-01-01",
-      "manager": "未知",
-      "scale": 0,
-      "lastUpdate": "2026-02-21T02:17:21.075Z",
-      "dailyGrowth": -0.01,
-      "weeklyGrowth": 0.09,
-      "monthlyGrowth": -0.21,
-      "yearlyGrowth": 1.29,
-      "rank": 858,
-      "totalInType": 863,
       "rating": "weak"
     },
     {
@@ -2287,5 +2251,5 @@
       "rating": "average"
     }
   ],
-  "lastSync": "2026-02-21T02:19:08.549Z"
+  "lastSync": "2026-02-21T02:33:56.506Z"
 }

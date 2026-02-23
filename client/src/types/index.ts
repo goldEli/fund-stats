@@ -1,5 +1,3 @@
-export type FundRating = 'excellent' | 'average' | 'weak';
-
 export interface Fund {
   code: string;
   name: string;
@@ -16,7 +14,6 @@ export interface Fund {
   yearlyGrowth: number;
   rank: number;
   totalInType: number;
-  rating: FundRating;
 }
 
 export interface ApiResponse<T> {
@@ -28,10 +25,5 @@ export interface ApiResponse<T> {
 
 export interface TypeDistribution {
   type: string;
-  count: number;
-}
-
-export interface RatingDistribution {
-  rating: FundRating;
   count: number;
 }

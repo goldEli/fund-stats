@@ -1,17 +1,9 @@
 import { useState, useEffect } from 'react';
 import { getAllFunds, addFund, deleteFund, syncFund, syncAllFunds } from '../services/api';
-import type { Fund, FundRating } from '../types';
+import type { Fund } from '../types';
 
-type SortField = 'code' | 'name' | 'type' | 'netValue' | 'monthlyGrowth' | 'yearlyGrowth' | 'rating' | 'rank';
+type SortField = 'code' | 'name' | 'type' | 'netValue' | 'monthlyGrowth' | 'yearlyGrowth' | 'rank';
 type SortDirection = 'asc' | 'desc';
-
-function calculateRating(rank: number, total: number): FundRating {
-  if (total === 0 || rank === 0) return 'average';
-  const percentage = rank / total;
-  if (percentage <= 0.2) return 'excellent';
-  if (percentage <= 0.6) return 'average';
-  return 'weak';
-}
 
 function FundList() {
   const [funds, setFunds] = useState<Fund[]>([]);
@@ -159,12 +151,6 @@ function FundList() {
     return sortDirection === 'asc' ? ' ↑' : ' ↓';
   };
 
-  const ratingValue: Record<FundRating, number> = {
-    excellent: 1,
-    average: 2,
-    weak: 3,
-  };
-
   const filteredAndSortedFunds = funds
     .filter(fund => 
       (typeFilter === '全部' || fund.type === typeFilter) &&
@@ -174,11 +160,6 @@ function FundList() {
     .sort((a, b) => {
       let aVal: any = a[sortField];
       let bVal: any = b[sortField];
-      
-      if (sortField === 'rating') {
-        aVal = ratingValue[a.rating];
-        bVal = ratingValue[b.rating];
-      }
       
       if (sortField === 'rank') {
         aVal = a.rank / (a.totalInType || 1);
@@ -197,15 +178,6 @@ function FundList() {
   const formatGrowth = (value: number) => {
     const formatted = value >= 0 ? `+${value.toFixed(2)}%` : `${value.toFixed(2)}%`;
     return formatted;
-  };
-
-  const formatRating = (rating: string) => {
-    switch (rating) {
-      case 'excellent': return '优秀';
-      case 'average': return '一般';
-      case 'weak': return '弱';
-      default: return rating;
-    }
   };
 
   if (loading) {
@@ -277,7 +249,6 @@ function FundList() {
                 <th onClick={() => handleSort('netValue')} style={{ cursor: 'pointer' }}>净值{getSortIndicator('netValue')}</th>
                 <th onClick={() => handleSort('monthlyGrowth')} style={{ cursor: 'pointer' }}>月增长{getSortIndicator('monthlyGrowth')}</th>
                 <th onClick={() => handleSort('yearlyGrowth')} style={{ cursor: 'pointer' }}>年增长{getSortIndicator('yearlyGrowth')}</th>
-                <th onClick={() => handleSort('rating')} style={{ cursor: 'pointer' }}>评级{getSortIndicator('rating')}</th>
                 <th onClick={() => handleSort('rank')} style={{ cursor: 'pointer' }}>近一个月<br/>同类型排名{getSortIndicator('rank')}</th>
                 <th>操作</th>
               </tr>
@@ -297,11 +268,6 @@ function FundList() {
                   <td>
                     <span className={`growth ${fund.yearlyGrowth >= 0 ? 'positive' : 'negative'}`}>
                       {formatGrowth(fund.yearlyGrowth)}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`rating ${calculateRating(fund.rank, fund.totalInType)}`} style={{ whiteSpace: 'nowrap' }}>
-                      {formatRating(calculateRating(fund.rank, fund.totalInType))}
                     </span>
                   </td>
                   <td>{fund.rank > 0 ? `${fund.rank}/${fund.totalInType}` : '-'}</td>

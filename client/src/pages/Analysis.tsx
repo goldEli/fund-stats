@@ -88,15 +88,6 @@ function Analysis() {
     return value >= 0 ? `+${value.toFixed(2)}%` : `${value.toFixed(2)}%`;
   };
 
-  const formatRating = (rating: string) => {
-    switch (rating) {
-      case 'excellent': return '优秀';
-      case 'average': return '一般';
-      case 'weak': return '弱';
-      default: return rating;
-    }
-  };
-
   if (loading) {
     return <div className="loading">加载中...</div>;
   }
@@ -145,7 +136,6 @@ function Analysis() {
                 <th>周增长</th>
                 <th>月增长</th>
                 <th>年增长</th>
-                <th>评级</th>
               </tr>
             </thead>
             <tbody>
@@ -173,11 +163,6 @@ function Analysis() {
                   <td>
                     <span className={`growth ${fund.yearlyGrowth >= 0 ? 'positive' : 'negative'}`}>
                       {formatGrowth(fund.yearlyGrowth)}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`rating ${fund.rating}`}>
-                      {formatRating(fund.rating)}
                     </span>
                   </td>
                 </tr>

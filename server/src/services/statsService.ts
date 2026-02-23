@@ -1,13 +1,5 @@
-import { Fund, FundRating } from '../types/index.js';
+import { Fund } from '../types/index.js';
 import { getAllFunds, updateFund } from './fundService.js';
-
-export function calculateRating(rank: number, total: number): FundRating {
-  if (total === 0 || rank === 0) return 'average';
-  const percentage = rank / total;
-  if (percentage <= 0.2) return 'excellent';
-  if (percentage <= 0.6) return 'average';
-  return 'weak';
-}
 
 export function calculateRankings(funds: Fund[], period: 'daily' | 'weekly' | 'monthly' | 'yearly' = 'monthly'): Fund[] {
   const rankedFunds: Fund[] = [];
@@ -15,13 +7,11 @@ export function calculateRankings(funds: Fund[], period: 'daily' | 'weekly' | 'm
   for (const fund of funds) {
     const rank = fund.rank > 0 ? fund.rank : 0;
     const total = fund.totalInType > 0 ? fund.totalInType : 0;
-    const rating = calculateRating(rank, total);
     
     rankedFunds.push({
       ...fund,
       rank,
       totalInType: total,
-      rating,
     });
   }
   
@@ -47,7 +37,6 @@ export function saveRankingsToFunds(): void {
     updateFund(rankedFund.code, {
       rank: rankedFund.rank,
       totalInType: rankedFund.totalInType,
-      rating: rankedFund.rating,
     });
   }
 }
@@ -61,19 +50,4 @@ export function getTypeDistribution(): { type: string; count: number }[] {
   }
   
   return Array.from(distribution.entries()).map(([type, count]) => ({ type, count }));
-}
-
-export function getRatingDistribution(): { rating: FundRating; count: number }[] {
-  const funds = getAllFunds();
-  const distribution = new Map<FundRating, number>();
-  
-  for (const fund of funds) {
-    distribution.set(fund.rating, (distribution.get(fund.rating) || 0) + 1);
-  }
-  
-  const ratingOrder: FundRating[] = ['excellent', 'average', 'weak'];
-  return ratingOrder.map(rating => ({
-    rating,
-    count: distribution.get(rating) || 0,
-  }));
 }
