@@ -2,6 +2,14 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { Fund } from '../types/index.js';
 
+function calculateRating(rank: number, totalInType: number): 'Good' | 'Normal' | 'Bad' {
+  if (rank <= 0 || totalInType <= 0) return 'Normal';
+  const ratio = rank / totalInType;
+  if (ratio <= 0.2) return 'Good';
+  if (ratio >= 0.6) return 'Bad';
+  return 'Normal';
+}
+
 function inferDetailedType(name: string, baseType: string): string {
   const nameLower = name.toLowerCase();
   
@@ -196,6 +204,7 @@ export async function fetchFundFromApi(code: string): Promise<Fund> {
     yearlyGrowth: Number(yearlyGrowth.toFixed(2)),
     rank: ranking.rank,
     totalInType: ranking.total,
+    rating: calculateRating(ranking.rank, ranking.total),
   };
   
   return fund;

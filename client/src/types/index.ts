@@ -14,6 +14,7 @@ export interface Fund {
   yearlyGrowth: number;
   rank: number;
   totalInType: number;
+  rating: 'Good' | 'Normal' | 'Bad';
 }
 
 export interface ApiResponse<T> {

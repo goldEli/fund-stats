@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getAllFunds, addFund, deleteFund, syncFund, syncAllFunds } from '../services/api';
 import type { Fund } from '../types';
 
-type SortField = 'code' | 'name' | 'type' | 'netValue' | 'monthlyGrowth' | 'yearlyGrowth' | 'rank';
+type SortField = 'code' | 'name' | 'type' | 'netValue' | 'monthlyGrowth' | 'yearlyGrowth' | 'rating' | 'rank';
 type SortDirection = 'asc' | 'desc';
 
 function FundList() {
@@ -180,6 +180,25 @@ function FundList() {
     return formatted;
   };
 
+  const calculateRating = (rank: number, totalInType: number): 'Good' | 'Normal' | 'Bad' => {
+    if (rank <= 0 || totalInType <= 0) return 'Normal';
+    const ratio = rank / totalInType;
+    if (ratio <= 0.2) return 'Good';
+    if (ratio >= 0.6) return 'Bad';
+    return 'Normal';
+  };
+
+  const getRatingStyle = (rating: 'Good' | 'Normal' | 'Bad') => {
+    switch (rating) {
+      case 'Good':
+        return { background: '#dcfce7', color: '#166534' };
+      case 'Bad':
+        return { background: '#f3f4f6', color: '#6b7280' };
+      default:
+        return { background: '#ffedd5', color: '#9a3412' };
+    }
+  };
+
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
@@ -250,6 +269,7 @@ function FundList() {
                 <th onClick={() => handleSort('monthlyGrowth')} style={{ cursor: 'pointer' }}>Monthly{getSortIndicator('monthlyGrowth')}</th>
                 <th onClick={() => handleSort('yearlyGrowth')} style={{ cursor: 'pointer' }}>Yearly{getSortIndicator('yearlyGrowth')}</th>
                 <th onClick={() => handleSort('rank')} style={{ cursor: 'pointer' }}>Rank<br/>(1 Month){getSortIndicator('rank')}</th>
+                <th onClick={() => handleSort('rating')} style={{ cursor: 'pointer' }}>Rating{getSortIndicator('rating')}</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -271,6 +291,18 @@ function FundList() {
                     </span>
                   </td>
                   <td>{fund.rank > 0 ? `${fund.rank}/${fund.totalInType}` : '-'}</td>
+                  <td>
+                    <span style={{
+                      ...getRatingStyle(calculateRating(fund.rank, fund.totalInType)),
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      fontSize: '12px',
+                      fontWeight: 500,
+                      whiteSpace: 'nowrap',
+                    }}>
+                      {calculateRating(fund.rank, fund.totalInType)}
+                    </span>
+                  </td>
                   <td className="actions">
                     <button
                       className="btn btn-secondary btn-sm"
