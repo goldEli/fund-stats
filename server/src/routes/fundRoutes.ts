@@ -1,7 +1,7 @@
-import { Router } from 'express';
+import { Router, type Express } from 'express';
 import * as fundController from '../controllers/fundController.js';
 
-const router = Router();
+const router: ReturnType<typeof Router> = Router();
 
 router.get('/funds', fundController.getAllFunds);
 router.get('/funds/sync-progress', fundController.getSyncProgress);
@@ -15,6 +15,5 @@ router.post('/funds/sync-all', fundController.syncAllFunds);
 
 router.get('/stats/ranking', fundController.getRanking);
 router.get('/stats/type-distribution', fundController.getTypeDistribution);
-router.get('/stats/rating-distribution', fundController.getRatingDistribution);
 
 export default router;

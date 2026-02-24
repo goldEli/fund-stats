@@ -194,11 +194,4 @@ export function getTypeDistribution(req: Request, res: Response): void {
   }
 }
 
-export function getRatingDistribution(req: Request, res: Response): void {
-  try {
-    const distribution = statsService.getRatingDistribution();
-    res.json({ success: true, data: distribution });
-  } catch (error) {
-    res.status(500).json({ success: false, error: 'Failed to get rating distribution' });
-  }
-}
+

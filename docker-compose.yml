@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ./server
+    ports:
+      - "8091:8091"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./server/data:/app/data
+    restart: unless-stopped
+
+  client:
+    build:
+      context: ./client
+    ports:
+      - "8092:8092"
+    depends_on:
+      - server
+    restart: unless-stopped
